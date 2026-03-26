@@ -16,6 +16,7 @@ export const AVAILABLE_MODELS: AIModel[] = [
   { id: 'gemini-3.1-pro-preview', name: 'Gemini 3.1 Pro (Free Built-in)', provider: 'Gemini', isFast: false, isQuality: true },
   { id: 'gemini-3-flash-preview', name: 'Gemini 3.0 Flash (Free Built-in)', provider: 'Gemini', isFast: true, isQuality: false },
   { id: 'google/gemini-2.5-flash:free', name: 'Gemini 2.5 Flash (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
+  { id: 'google/gemini-2.5-flash-lite-preview-09-2025', name: 'Gemini 2.5 Flash Lite (OpenRouter)', provider: 'OpenRouter', isFast: true, isQuality: false },
   { id: 'meta-llama/llama-3-8b-instruct:free', name: 'Llama 3 8B (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
   { id: 'mistralai/mistral-7b-instruct:free', name: 'Mistral 7B (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
   { id: 'gpt-4o', name: 'GPT-4o (Paid)', provider: 'OpenAI', isFast: false, isQuality: true },
@@ -184,11 +185,17 @@ export const generateWithFallback = async (
   } catch (error: any) {
     console.warn(`Model ${initialModel.name} failed. Attempting fallback...`, error);
     
-    const errorMessage = error.message || '';
+    const errorMessage = error.message || String(error);
 
     // If it's a missing key error, do not fallback. Force the user to enter the key.
     if (errorMessage.includes('Vui lòng nhập') || errorMessage.includes('API key is missing')) {
       throw new Error(errorMessage.includes('Vui lòng nhập') ? errorMessage : `Vui lòng nhập API Key cho ${initialModel.provider} trong phần Cài đặt (Settings).`);
+    }
+
+    // If the user is using their OWN API key (OpenRouter or OpenAI), we should tell them exactly what failed
+    // instead of falling back to the free built-in Gemini (which might be rate limited).
+    if (initialModel.provider === 'OpenRouter' || initialModel.provider === 'OpenAI') {
+        throw new Error(`Lỗi từ ${initialModel.provider} (${initialModel.name}): ${errorMessage}. Vui lòng kiểm tra lại API Key hoặc số dư tài khoản của bạn.`);
     }
 
     // If the initial model hits a rate limit, don't silently fallback to another rate-limited model if it's the same provider
@@ -208,11 +215,11 @@ export const generateWithFallback = async (
     try {
       return await generateContent(fallbackModel, systemInstruction, prompt, keys, onChunk, enableSearch);
     } catch (fallbackError: any) {
-      const fbErrorMessage = fallbackError.message || '';
+      const fbErrorMessage = fallbackError.message || String(fallbackError);
       if (fbErrorMessage.includes('429') || fbErrorMessage.includes('Quota exceeded') || fbErrorMessage.includes('RESOURCE_EXHAUSTED')) {
         throw new Error(`Lỗi giới hạn (Rate Limit): Hệ thống đã hết lượt sử dụng miễn phí tạm thời. Vui lòng thử lại sau ít phút hoặc nhập API Key riêng của bạn trong phần Cài đặt (Settings).`);
       }
-      throw fallbackError;
+      throw new Error(`Lỗi Fallback Model: ${fbErrorMessage}`);
     }
   }
 };
