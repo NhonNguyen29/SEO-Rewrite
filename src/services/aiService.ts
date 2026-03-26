@@ -17,8 +17,10 @@ export const AVAILABLE_MODELS: AIModel[] = [
   { id: 'gemini-3-flash-preview', name: 'Gemini 3.0 Flash (Free Built-in)', provider: 'Gemini', isFast: true, isQuality: false },
   { id: 'google/gemini-2.5-flash:free', name: 'Gemini 2.5 Flash (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
   { id: 'google/gemini-2.5-flash-lite-preview-09-2025', name: 'Gemini 2.5 Flash Lite (OpenRouter)', provider: 'OpenRouter', isFast: true, isQuality: false },
-  { id: 'meta-llama/llama-3-8b-instruct:free', name: 'Llama 3 8B (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
+  { id: 'meta-llama/llama-3.1-8b-instruct:free', name: 'Llama 3.1 8B (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
+  { id: 'qwen/qwen-2.5-72b-instruct:free', name: 'Qwen 2.5 72B (Free)', provider: 'OpenRouter', isFast: false, isQuality: true },
   { id: 'mistralai/mistral-7b-instruct:free', name: 'Mistral 7B (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
+  { id: 'microsoft/phi-3-mini-128k-instruct:free', name: 'Phi-3 Mini (Free)', provider: 'OpenRouter', isFast: true, isQuality: false },
   { id: 'gpt-4o', name: 'GPT-4o (Paid)', provider: 'OpenAI', isFast: false, isQuality: true },
   { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet (Paid)', provider: 'OpenRouter', isFast: false, isQuality: true },
 ];
@@ -133,7 +135,7 @@ export const generateContent = async (
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
-        max_tokens: 4000,
+        max_tokens: 6000,
         stream: true,
       });
 

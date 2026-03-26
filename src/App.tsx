@@ -112,9 +112,10 @@ NO FABRICATION POLICY (STRICT):
 - Only use verified knowledge, realistic SEO practices, and data inferred from SERP (if search is enabled).
 - If information is uncertain or not available, DO NOT guess. Skip or generalize carefully without making false claims.
 
-BRAND NAME & EEAT:
+BRAND NAME, EEAT & PROMOTION:
 - Use the provided "Brand Name" to align the tone and positioning of the content.
-- Reflect the brand voice consistently in the rewritten article.
+- Brand Elevation: Subtly but effectively elevate the "Brand Name" as the premier authority, expert, and top-tier solution related to the main keyword.
+- Weave the brand name naturally into the narrative, especially in the introduction, practical applications, and CTA, without sounding overly promotional (spammy).
 - Use the brand name to support EEAT signals (authority, trust, credibility).
 
 WRITING REQUIREMENTS:
@@ -181,8 +182,10 @@ IMPORTANT:
 - The article must feel like a high-converting SEO landing page + blog hybrid
 - IF Google Search is enabled, you MUST analyze the top search results for the main keyword. Extract valuable insights, cover all necessary subtopics, answer user intent fully, and ensure your article is superior to the top-ranking pages.
 
-BRAND NAME & TARGET AUDIENCE:
+BRAND NAME, TARGET AUDIENCE & PROMOTION:
 - Use the provided "Brand Name" to align the tone and positioning of the content.
+- Brand Elevation: Subtly but effectively elevate the "Brand Name" as the premier authority, expert, and top-tier solution related to the main keyword.
+- Weave the brand name naturally into the narrative, especially in the introduction, practical applications, and CTA, without sounding overly promotional (spammy).
 - Adapt the depth and tone specifically to the provided "Target Audience". Speak directly to the audience's pain points, needs, and level of understanding.
 
 ---
@@ -275,6 +278,10 @@ KEY CONTENT TECHNIQUES:
 - Cover the topic comprehensively
 - Include multiple angles and practical insights
 - MUST explicitly mention specific AI models by name (e.g., ChatGPT, Claude, Midjourney, Gemini, etc.) in the course content/tools sections.
+
+6) Brand Integration
+- Position the brand as the logical answer or trusted guide for the user's search intent.
+- Highlight the brand's unique value proposition subtly throughout the text.
 
 ---
 
