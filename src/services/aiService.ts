@@ -172,15 +172,47 @@ export const generateWithFallback = async (
   enableSearch: boolean
 ): Promise<string> => {
   try {
+    // Pre-check API keys to avoid unnecessary fallbacks
+    if (initialModel.provider === 'OpenAI' && !keys.openai) {
+      throw new Error('Vui lòng nhập OpenAI API Key trong phần Cài đặt (Settings) góc phải trên cùng để sử dụng model này.');
+    }
+    if (initialModel.provider === 'OpenRouter' && !keys.openrouter) {
+      throw new Error('Vui lòng nhập OpenRouter API Key trong phần Cài đặt (Settings) góc phải trên cùng để sử dụng model này.');
+    }
+
     return await generateContent(initialModel, systemInstruction, prompt, keys, onChunk, enableSearch);
-  } catch (error) {
+  } catch (error: any) {
     console.warn(`Model ${initialModel.name} failed. Attempting fallback...`, error);
     
-    // Find a fallback model (different provider if possible, or just a reliable one)
-    const fallbackModel = AVAILABLE_MODELS.find(m => m.id !== initialModel.id && m.isQuality) || AVAILABLE_MODELS[0];
+    const errorMessage = error.message || '';
+
+    // If it's a missing key error, do not fallback. Force the user to enter the key.
+    if (errorMessage.includes('Vui lòng nhập') || errorMessage.includes('API key is missing')) {
+      throw new Error(errorMessage.includes('Vui lòng nhập') ? errorMessage : `Vui lòng nhập API Key cho ${initialModel.provider} trong phần Cài đặt (Settings).`);
+    }
+
+    // If the initial model hits a rate limit, don't silently fallback to another rate-limited model if it's the same provider
+    if (errorMessage.includes('429') || errorMessage.includes('Quota exceeded') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
+       // If they are using the default built-in key, tell them to use their own
+       throw new Error(`Lỗi giới hạn (Rate Limit) trên ${initialModel.name}: Hệ thống đã hết lượt sử dụng miễn phí tạm thời. Vui lòng thử lại sau ít phút hoặc nhập API Key riêng của bạn trong phần Cài đặt (Settings).`);
+    }
+
+    // Find a fallback model (prefer Gemini Flash as it's faster and has higher limits)
+    let fallbackModel = AVAILABLE_MODELS.find(m => m.id === 'gemini-3-flash-preview');
+    if (!fallbackModel || fallbackModel.id === initialModel.id) {
+      fallbackModel = AVAILABLE_MODELS.find(m => m.id !== initialModel.id && m.isQuality) || AVAILABLE_MODELS[0];
+    }
     
     onFallback(fallbackModel);
     
-    return await generateContent(fallbackModel, systemInstruction, prompt, keys, onChunk, enableSearch);
+    try {
+      return await generateContent(fallbackModel, systemInstruction, prompt, keys, onChunk, enableSearch);
+    } catch (fallbackError: any) {
+      const fbErrorMessage = fallbackError.message || '';
+      if (fbErrorMessage.includes('429') || fbErrorMessage.includes('Quota exceeded') || fbErrorMessage.includes('RESOURCE_EXHAUSTED')) {
+        throw new Error(`Lỗi giới hạn (Rate Limit): Hệ thống đã hết lượt sử dụng miễn phí tạm thời. Vui lòng thử lại sau ít phút hoặc nhập API Key riêng của bạn trong phần Cài đặt (Settings).`);
+      }
+      throw fallbackError;
+    }
   }
 };
